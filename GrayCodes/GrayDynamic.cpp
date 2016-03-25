@@ -1,4 +1,5 @@
 #include "GrayDynamic.hpp"
+#include "GrayShared.hpp"
 #include <cassert>
 #include <cmath>
 

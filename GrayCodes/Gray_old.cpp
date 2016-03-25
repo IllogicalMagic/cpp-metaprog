@@ -1,29 +1,13 @@
 #include <cstdio>
 #include "utils.h"
 #include "GrayDynamic.hpp"
+#include "GrayShared.hpp"
 
 // Size and visualization of Gray codes
 constexpr unsigned bit=5;
 constexpr GrayType view=GrayType::DECIMAL;
 
 enum class Order {NORMAL,REVERSED};
-
-typedef long unsigned code_t;
-
-template<unsigned Bit, GrayType T>
-struct GrayView;
-
-template<unsigned Bit>
-struct GrayView<Bit,GrayType::BINARY>
-{
-  constexpr static code_t value = Pow<10,Bit-1>::value;
-};
-
-template<unsigned Bit>
-struct GrayView<Bit,GrayType::DECIMAL>
-{
-  constexpr static code_t value = 1<<(Bit-1);
-};
 
 // List with Gray codes
 template<unsigned Bit, code_t Val, Order Ord, GrayType T>
@@ -49,10 +33,10 @@ struct GrayList<Bit,Val,Order::NORMAL,T>
 {
   
   constexpr static code_t mid = static_cast<code_t>(1)<<(Bit-1);
-  constexpr static code_t add = GrayView<Bit,T>::value;
+  constexpr static code_t rval = GrayView<Bit,T>()(Val);
   
   typedef GrayList<Bit-1,Val,Order::NORMAL,T> First;
-  typedef GrayList<Bit-1,add+Val,Order::REVERSED,T> Second;
+  typedef GrayList<Bit-1,rval,Order::REVERSED,T> Second;
 
   static code_t get(code_t n) 
   {
@@ -66,9 +50,9 @@ struct GrayList<Bit,Val,Order::REVERSED,T>
 {
 
   constexpr static code_t mid = static_cast<code_t>(1)<<(Bit-1);
-  constexpr static code_t add = GrayView<Bit,T>::value;
+  constexpr static code_t rval = GrayView<Bit,T>()(Val);
 
-  typedef GrayList<Bit-1,add+Val,Order::NORMAL,T> First;
+  typedef GrayList<Bit-1,rval,Order::NORMAL,T> First;
   typedef GrayList<Bit-1,Val,Order::REVERSED,T> Second;
 
   static code_t get(code_t n) 

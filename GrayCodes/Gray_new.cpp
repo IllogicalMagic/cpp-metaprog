@@ -4,32 +4,11 @@
 
 #include "utils.h"
 #include "GrayDynamic.hpp"
+#include "GrayShared.hpp"
 
 // Size and visualization of Gray codes
 constexpr unsigned bit=4;
 constexpr GrayType view=GrayType::DECIMAL;
-
-typedef long unsigned lu;
-
-// Get right value for concatenation
-template<lu Y,GrayType V>
-struct GrayView;
-
-// 0 1 3 2 etc.
-template<lu Y>
-struct GrayView<Y,GrayType::DECIMAL>
-{
-  constexpr auto
-  operator()(const lu x){return (1<<(Y-1))+x;}
-};
-
-// 0 1 11 10 etc.
-template<lu Y>
-struct GrayView<Y,GrayType::BINARY>
-{
-  constexpr auto
-  operator()(const lu x){return Pow<10,Y-1>::value+x;}
-};
 
 // Main struct
 // gray bit  = (map ('0':) gray (bit-1)) 
@@ -37,7 +16,7 @@ struct GrayView<Y,GrayType::BINARY>
 template<unsigned Bit,GrayType v>
 struct Gray
 {
-  static constexpr std::array<lu,(1<<Bit)> result =
+  static constexpr std::array<code_t,(1<<Bit)> result =
     append(std::move(Gray<Bit-1,v>::result),
 	   map(GrayView<Bit,v>(),
 	       std::make_tuple(),
@@ -47,21 +26,21 @@ struct Gray
 template<GrayType v>
 struct Gray<1,v>
 {
-  static constexpr std::array<lu,2> result {0,1};
+  static constexpr std::array<code_t,2> result {0,1};
 };
 
 template<GrayType v>
 struct Gray<0,v>
 {
-  static constexpr std::array<lu,1> result {0};
+  static constexpr std::array<code_t,1> result {0};
 };
 
 
 
 int main()
 {
-  std::array<lu,(1<<bit)> stat_gray = Gray<bit,view>::result;
-  lu dyn_gray[1<<bit];
+  std::array<code_t,(1<<bit)> stat_gray = Gray<bit,view>::result;
+  code_t dyn_gray[1<<bit];
   gray_dynamic(dyn_gray,bit,view);
 
   // Compare codes
