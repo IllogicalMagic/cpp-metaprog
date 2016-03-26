@@ -31,4 +31,6 @@
 *~
 *.s
 
-GrayCodes/Gray_old
+GrayCodes/GrayOld
+GrayCodes/GraySeq
+

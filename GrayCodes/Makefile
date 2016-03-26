@@ -3,17 +3,22 @@ CC=$(CXX)
 CXXSTD?=c++11
 CXXFLAGS?=-std=$(CXXSTD) -Wall -Werror -pedantic-errors -O0
 
-all: Gray_old
+all: GrayOld GraySeq
 
 dotest: all
-	./Gray_old
+	./GrayOld
+	./GraySeq
 
-Gray_old: Gray_old.o GrayDynamic.o
+GrayOld: GrayOld.o GrayDynamic.o
 
-Gray_old.o: Gray_old.cpp GrayDynamic.hpp GrayShared.hpp
+GrayOld.o: GrayOld.cpp GrayDynamic.hpp GrayShared.hpp
 
 GrayDynamic.o: GrayDynamic.cpp GrayDynamic.hpp GrayShared.hpp
 
+GraySeq: GraySeq.o GrayDynamic.o
+
+GraySeq.o: GraySeq.cpp GrayDynamic.hpp GrayShared.hpp
+
 clean:
-	rm -f Gray_old *.o *~ *.s
+	rm -f GrayOld GraySeq *.o *~ *.s
 

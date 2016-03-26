@@ -49,21 +49,13 @@ int main()
   gray_dynamic(dyn_gray,bit,view);
   
   // Compare codes
-  for (int i=0;i<(1<<bit);++i) {
-    if (stat_gray[i]!=dyn_gray[i]) {
-
-      std::cout << "Err: stat_gray[" 
-		<< i
-		<< "]!=dyn_gray[" 
-		<< i
-		<< "] ("
-		<< stat_gray[i]
-		<< "!="
-		<< dyn_gray[i]
-		<< " )\n";
-
-    }
+  bool success=true;
+  for (codesize_t i=0;i<(1<<bit);++i) {
+    success&=gray_check(stat_gray[i],dyn_gray[i],i);
   }
+
+  if (success==true)
+    print_success(__FILE__);
 
   return 0;
 }

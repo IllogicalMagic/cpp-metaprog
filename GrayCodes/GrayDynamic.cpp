@@ -1,7 +1,9 @@
-#include "GrayDynamic.hpp"
-#include "GrayShared.hpp"
+#include <iostream>
 #include <cassert>
 #include <cmath>
+
+#include "GrayDynamic.hpp"
+#include "GrayShared.hpp"
 
 static void 
 gray_fill(code_t *,codesize_t,codesize_t,codesize_t,GrayView);
@@ -46,3 +48,28 @@ code_t get_gray_add(GrayView view, codesize_t bits)
     return 0;
   }
 }
+
+// Check codes
+bool gray_check(code_t stat, code_t dyn, codesize_t i)
+{
+  if (stat!=dyn) {
+
+    std::cout << "Err: stat_gray[" 
+	      << i
+	      << "]!=dyn_gray[" 
+	      << i
+	      << "] ("
+	      << stat
+	      << "!="
+	      << dyn
+	      << " )\n";
+    return false;
+  }
+  return true;
+}
+
+void print_success(const char* filename)
+{
+  std::cout << filename << " successfully passed all tests\n";
+}
+
