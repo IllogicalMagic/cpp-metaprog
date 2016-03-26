@@ -1,44 +1,88 @@
 #ifndef GRAY_SHARED_H_DEFINED_
 #define GRAY_SHARED_H_DEFINED_
 
+#if __cplusplus==199711L
+
+typedef unsigned long g_uint_t;
+
+#else
+
+#include <cstdint>
+
+typedef std::uint64_t g_uint_t;
+
+#endif
+
+
 // Simple Pow
-template<long unsigned N, long unsigned E>
+template<g_uint_t N, g_uint_t E>
 struct Pow
 {
   enum {value=N*Pow<N,E-1>::value};
 };
 
-template<long unsigned N>
+template<g_uint_t N>
 struct Pow<N,0>
 {
   enum {value=1};
 };
 // Pow end
 
-// Binary -   0  1 11 10
-// Decimal -  0  1  3  2
-enum class GrayType {BINARY,DECIMAL};
+// Decimal -> Binary converter
+template<g_uint_t N,g_uint_t Res=0,g_uint_t Mult=1>
+struct DecToBin: DecToBin< (N>>1), Res+(N&1)*Mult,Mult*10>
+{};
 
-typedef long unsigned code_t;
-
-// Get right value for concatenation
-template<code_t Y,GrayType V>
-struct GrayView;
-
-// 0 1 3 2 etc.
-template<code_t Y>
-struct GrayView<Y,GrayType::DECIMAL>
+template<g_uint_t Res,g_uint_t Mult>
+struct DecToBin<0,Res,Mult>
 {
-  constexpr code_t
-  operator()(const code_t x){return (1<<(Y-1))+x;}
+  enum {value=Res};
+};
+// DecToBin end
+
+typedef g_uint_t code_t;
+typedef code_t codesize_t;
+
+enum GrayView {BINARY,DECIMAL};
+
+// GrayVisualize
+// Produce binary or decimal code
+template<code_t N, GrayView V>
+struct GrayVisualize;
+
+template<code_t N>
+struct GrayVisualize<N,BINARY>
+{
+  enum {value=DecToBin<N>::value};
 };
 
-// 0 1 11 10 etc.
-template<code_t Y>
-struct GrayView<Y,GrayType::BINARY>
+template<code_t N>
+struct GrayVisualize<N,DECIMAL>
 {
-  constexpr code_t
-  operator()(const code_t x){return Pow<10,Y-1>::value+x;}
+  enum {value=N};
 };
+// GrayVisualize end
+
+// Encoder
+template<code_t N>
+struct GrayEncode
+{
+  enum {value=N^(N>>1)};
+};
+// Encoder end
+
+// Decoder
+template<code_t N>
+struct GrayDecode
+{
+  enum {value=GrayDecode<(N>>1)>::value ^ N};
+};
+
+template<>
+struct GrayDecode<0>
+{
+  enum {value=0};
+};
+// Decoder end
 
 #endif

@@ -3,6 +3,6 @@
 
 #include "GrayShared.hpp"
 
-void gray_dynamic(long unsigned*, unsigned,GrayType);
+void gray_dynamic(code_t*, codesize_t,GrayView);
 
 #endif

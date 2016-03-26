@@ -3,69 +3,41 @@
 #include "GrayShared.hpp"
 
 // Size and visualization of Gray codes
-constexpr unsigned bit=5;
-constexpr GrayType view=GrayType::DECIMAL;
-
-enum class Order {NORMAL,REVERSED};
+const codesize_t bit=4;
+const GrayView view=BINARY;
 
 // List with Gray codes
-template<unsigned Bit, code_t Val, Order Ord, GrayType T>
-struct GrayList;
-
-// Leaves
-template<code_t Val, GrayType T>
-struct GrayList<0,Val,Order::NORMAL,T>
+template<codesize_t Bit, GrayView T, code_t Val>
+struct GrayList
 {
-  static code_t get(code_t) {return Val;}
+  
+  const static code_t mid = static_cast<code_t>(1)<<(Bit-1);
+  
+  typedef GrayList<Bit-1,T,Val> First;
+  typedef GrayList<Bit-1,T,mid+Val> Second;
+
+  static code_t get(code_t n) 
+  {
+    return (n<mid)?First::get(n):Second::get(n-mid);
+  }
 };
 
-template<code_t Val, GrayType T>
-struct GrayList<0,Val,Order::REVERSED,T>
+// Leaves
+template<code_t Val, GrayView T>
+struct GrayList<0,T,Val>
 {
-  static code_t get(code_t) {return Val;}
+  static code_t get(code_t) 
+  {
+    return GrayVisualize<GrayEncode<Val>::value,T>::value;
+  }
 };
 // Leaves end
 
-// Normal ordered list
-template<unsigned Bit, code_t Val, GrayType T>
-struct GrayList<Bit,Val,Order::NORMAL,T>
-{
-  
-  constexpr static code_t mid = static_cast<code_t>(1)<<(Bit-1);
-  constexpr static code_t rval = GrayView<Bit,T>()(Val);
-  
-  typedef GrayList<Bit-1,Val,Order::NORMAL,T> First;
-  typedef GrayList<Bit-1,rval,Order::REVERSED,T> Second;
-
-  static code_t get(code_t n) 
-  {
-    return (n<mid)?First::get(n):Second::get(n-mid);
-  }
-};
-
-// Reversed list
-template<unsigned Bit,code_t Val, GrayType T>
-struct GrayList<Bit,Val,Order::REVERSED,T>
-{
-
-  constexpr static code_t mid = static_cast<code_t>(1)<<(Bit-1);
-  constexpr static code_t rval = GrayView<Bit,T>()(Val);
-
-  typedef GrayList<Bit-1,rval,Order::NORMAL,T> First;
-  typedef GrayList<Bit-1,Val,Order::REVERSED,T> Second;
-
-  static code_t get(code_t n) 
-  {
-    return (n<mid)?First::get(n):Second::get(n-mid);
-  }
-  
-};
-
 // Main struct
-template<unsigned Bit, GrayType T>
+template<unsigned Bit, GrayView T>
 struct Gray
 {
-  typedef GrayList<Bit,0,Order::NORMAL,T> Codes;
+  typedef GrayList<Bit,T,0> Codes;
 
   code_t operator[](code_t n) {return Codes::get(n);}
 };
@@ -81,13 +53,13 @@ int main()
     if (stat_gray[i]!=dyn_gray[i]) {
 
       std::cout << "Err: stat_gray[" 
-		<< stat_gray[i] 
-		<< "!=dyn_gray[" 
-		<< dyn_gray[i]
+		<< i
+		<< "]!=dyn_gray[" 
+		<< i
 		<< "] ("
-		<< i
+		<< stat_gray[i]
 		<< "!="
-		<< i
+		<< dyn_gray[i]
 		<< " )\n";
 
     }

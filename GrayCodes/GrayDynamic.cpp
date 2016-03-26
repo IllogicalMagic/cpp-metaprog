@@ -3,19 +3,21 @@
 #include <cassert>
 #include <cmath>
 
-typedef long unsigned lu;
-static void gray_fill(lu *,unsigned,unsigned,unsigned,GrayType);
-static lu get_gray_add(GrayType,unsigned);
+static void 
+gray_fill(code_t *,codesize_t,codesize_t,codesize_t,GrayView);
 
-void gray_dynamic(lu* a, unsigned bits, GrayType view)
+static code_t get_gray_add(GrayView,code_t);
+
+void gray_dynamic(code_t* a, codesize_t bits, GrayView view)
 {
   if (bits==0)
     return;
   gray_fill(a,0,1<<bits,bits,view);
 }
 
-void gray_fill(lu* a, unsigned begin, unsigned end,
-	      unsigned bits, GrayType view)
+static void 
+gray_fill(code_t * a,codesize_t begin,
+	  codesize_t end,codesize_t bits,GrayView view)
 {
   if (bits==0) {
     a[begin]=0;
@@ -32,12 +34,12 @@ void gray_fill(lu* a, unsigned begin, unsigned end,
 }
 
 // Generate right value for concatenation
-lu get_gray_add(GrayType view, unsigned bits)
+code_t get_gray_add(GrayView view, codesize_t bits)
 {
   switch (view) {
-  case GrayType::BINARY:
+  case BINARY:
     return pow(10,bits-1);
-  case GrayType::DECIMAL:
+  case DECIMAL:
     return 1<<(bits-1);
   default:
     assert(false);

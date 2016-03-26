@@ -1,7 +1,7 @@
 CXX?=g++
 CC=$(CXX)
-CXXSTD?=-std=c++11
-CXXFLAGS?=$(CXXSTD) -Wall -Werror -pedantic-errors -O0
+CXXSTD?=c++11
+CXXFLAGS?=-std=$(CXXSTD) -Wall -Werror -pedantic-errors -O0
 
 all: Gray_old
 
