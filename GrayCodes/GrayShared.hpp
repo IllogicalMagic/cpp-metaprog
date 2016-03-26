@@ -1,7 +1,19 @@
 #ifndef GRAY_SHARED_H_DEFINED_
 #define GRAY_SHARED_H_DEFINED_
 
-#include "utils.h"
+// Simple Pow
+template<long unsigned N, long unsigned E>
+struct Pow
+{
+  enum {value=N*Pow<N,E-1>::value};
+};
+
+template<long unsigned N>
+struct Pow<N,0>
+{
+  enum {value=1};
+};
+// Pow end
 
 // Binary -   0  1 11 10
 // Decimal -  0  1  3  2
@@ -17,7 +29,7 @@ struct GrayView;
 template<code_t Y>
 struct GrayView<Y,GrayType::DECIMAL>
 {
-  constexpr auto
+  constexpr code_t
   operator()(const code_t x){return (1<<(Y-1))+x;}
 };
 
@@ -25,7 +37,7 @@ struct GrayView<Y,GrayType::DECIMAL>
 template<code_t Y>
 struct GrayView<Y,GrayType::BINARY>
 {
-  constexpr auto
+  constexpr code_t
   operator()(const code_t x){return Pow<10,Y-1>::value+x;}
 };
 

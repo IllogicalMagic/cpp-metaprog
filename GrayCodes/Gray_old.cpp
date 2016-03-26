@@ -1,5 +1,4 @@
-#include <cstdio>
-#include "utils.h"
+#include <iostream>
 #include "GrayDynamic.hpp"
 #include "GrayShared.hpp"
 
@@ -17,13 +16,13 @@ struct GrayList;
 template<code_t Val, GrayType T>
 struct GrayList<0,Val,Order::NORMAL,T>
 {
-  static code_t get(code_t n) {return Val;}
+  static code_t get(code_t) {return Val;}
 };
 
 template<code_t Val, GrayType T>
 struct GrayList<0,Val,Order::REVERSED,T>
 {
-  static code_t get(code_t n) {return Val;}
+  static code_t get(code_t) {return Val;}
 };
 // Leaves end
 
@@ -80,8 +79,17 @@ int main()
   // Compare codes
   for (int i=0;i<(1<<bit);++i) {
     if (stat_gray[i]!=dyn_gray[i]) {
-      printf("Err: stat_gray[%d]!=dyn_gray[%d] (%lu!=%lu)\n",
-      	     i,i,stat_gray[i],dyn_gray[i]);
+
+      std::cout << "Err: stat_gray[" 
+		<< stat_gray[i] 
+		<< "!=dyn_gray[" 
+		<< dyn_gray[i]
+		<< "] ("
+		<< i
+		<< "!="
+		<< i
+		<< " )\n";
+
     }
   }
 

@@ -1,24 +1,19 @@
 CXX?=g++
 CC=$(CXX)
-CXXSTD?=-std=c++1y
+CXXSTD?=-std=c++11
 CXXFLAGS?=$(CXXSTD) -Wall -Werror -pedantic-errors -O0
 
-all: Gray_new Gray_old
+all: Gray_old
 
 dotest: all
-	./Gray_new
 	./Gray_old
-
-Gray_new: Gray_new.o GrayDynamic.o
-
-Gray_new.o: Gray_new.cpp GrayDynamic.hpp GrayShared.hpp utils.h
 
 Gray_old: Gray_old.o GrayDynamic.o
 
-Gray_old.o: Gray_old.cpp GrayDynamic.hpp GrayShared.hpp utils.h
+Gray_old.o: Gray_old.cpp GrayDynamic.hpp GrayShared.hpp
 
 GrayDynamic.o: GrayDynamic.cpp GrayDynamic.hpp GrayShared.hpp
 
 clean:
-	rm -f Gray_new Gray_old *.o *~ *.s
+	rm -f Gray_old *.o *~ *.s
 
