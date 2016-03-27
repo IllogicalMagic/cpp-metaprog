@@ -26,6 +26,7 @@ struct GrayCodes<V,0,S...>
 
 int main()
 {
+  static_assert(!(view==BINARY && bits>=9),"Binary bits should be < 9");
   const codesize_t size = static_cast<codesize_t>(1)<<bits;
   auto gray_stat=GrayCodes<view,size>::make_codes();
   code_t gray_dyn[size];

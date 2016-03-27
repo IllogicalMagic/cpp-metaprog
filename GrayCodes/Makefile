@@ -12,7 +12,7 @@ dotest: all
 
 GrayOld: GrayOld.o GrayDynamic.o
 
-GrayOld.o: GrayOld.cpp GrayDynamic.hpp GrayShared.hpp
+GrayOld.o: GrayOld.cpp GrayDynamic.hpp GrayShared.hpp mStaticAssert.hpp
 
 GrayDynamic.o: GrayDynamic.cpp GrayDynamic.hpp GrayShared.hpp
 

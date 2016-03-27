@@ -1,6 +1,7 @@
 #include <iostream>
 #include "GrayDynamic.hpp"
 #include "GrayShared.hpp"
+#include "mStaticAssert.hpp"
 
 #ifndef G_BITS
 #define G_BITS 4ul
@@ -44,6 +45,7 @@ struct Gray
 
 int main()
 {
+  mStaticAssert<!(view==BINARY && bit>=9)>("Binary bits should be < 9");
   Gray<bit,view> stat_gray;
   code_t dyn_gray[1<<bit];
   gray_dynamic(dyn_gray,bit,view);
