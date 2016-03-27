@@ -3,8 +3,12 @@
 #include "GrayShared.hpp"
 #include "GrayDynamic.hpp"
 
-constexpr codesize_t bits = 3;
-constexpr GrayView view = BINARY;
+#ifndef G_BITS
+#define G_BITS 4
+#endif
+
+constexpr codesize_t bits = G_BITS;
+constexpr GrayView view = DECIMAL;
 
 // GrayCodes array
 template<GrayView V, code_t N,code_t...S>
@@ -13,14 +17,17 @@ struct GrayCodes:GrayCodes<V,N-1,N-1,S...>{};
 template <GrayView V, code_t...S>
 struct GrayCodes<V,0,S...>
 {
-  static constexpr std::array<code_t,sizeof...(S)> value 
-  {GrayVisualize<GrayEncode<S>::value,V>::value...};
+  static constexpr std::array<code_t,sizeof...(S)> 
+  make_codes()
+  { 
+    return {GrayVisualize<GrayEncode<S>::value,V>::value...};
+  }
 };
 
 int main()
 {
   const codesize_t size = static_cast<codesize_t>(1)<<bits;
-  auto gray_stat=GrayCodes<view,size>::value;
+  auto gray_stat=GrayCodes<view,size>::make_codes();
   code_t gray_dyn[size];
   gray_dynamic(gray_dyn,bits,view);
   

@@ -2,42 +2,42 @@
 #include "GrayDynamic.hpp"
 #include "GrayShared.hpp"
 
+#ifndef G_BITS
+#define G_BITS 4ul
+#endif
+
 // Size and visualization of Gray codes
-const codesize_t bit=4;
-const GrayView view=BINARY;
+const codesize_t bit=G_BITS;
+const GrayView view=DECIMAL;
 
 // List with Gray codes
-template<codesize_t Bit, GrayView T, code_t Val>
+template<GrayView T, code_t Val>
 struct GrayList
 {
-  
-  const static code_t mid = static_cast<code_t>(1)<<(Bit-1);
-  
-  typedef GrayList<Bit-1,T,Val> First;
-  typedef GrayList<Bit-1,T,mid+Val> Second;
-
+  typedef GrayList<T,Val-1> next;
   static code_t get(code_t n) 
   {
-    return (n<mid)?First::get(n):Second::get(n-mid);
+    return (n==Val) 
+      ? (code_t)GrayVisualize<GrayEncode<Val>::value,T>::value 
+      : next::get(n);
   }
 };
 
-// Leaves
-template<code_t Val, GrayView T>
-struct GrayList<0,T,Val>
+// Last
+template<GrayView T>
+struct GrayList<T,0>
 {
   static code_t get(code_t) 
   {
-    return GrayVisualize<GrayEncode<Val>::value,T>::value;
+    return GrayVisualize<GrayEncode<0>::value,T>::value;
   }
 };
-// Leaves end
 
 // Main struct
 template<unsigned Bit, GrayView T>
 struct Gray
 {
-  typedef GrayList<Bit,T,0> Codes;
+  typedef GrayList<T,((codesize_t)1<<Bit)-1> Codes;
 
   code_t operator[](code_t n) {return Codes::get(n);}
 };
