@@ -15,12 +15,17 @@ const GrayView view=DECIMAL;
 template<GrayView T, code_t Val>
 struct GrayList
 {
+
+  enum {value=GrayVisualize<GrayEncode<Val>::value,T>::value};
+
   typedef GrayList<T,Val-1> next;
   static code_t get(code_t n) 
   {
-    return (n==Val) 
-      ? (code_t)GrayVisualize<GrayEncode<Val>::value,T>::value 
-      : next::get(n);
+    return (n==Val) ? 
+      (code_t)value 
+      : (n>(Val>>1) ? 
+      	 next::get(n) :
+      	 GrayList<T,(Val>>1)>::get(n));
   }
 };
 
@@ -28,9 +33,11 @@ struct GrayList
 template<GrayView T>
 struct GrayList<T,0>
 {
+  enum {value=GrayVisualize<0,T>::value};
+
   static code_t get(code_t) 
   {
-    return GrayVisualize<GrayEncode<0>::value,T>::value;
+    return (code_t)value;
   }
 };
 
