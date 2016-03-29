@@ -12,7 +12,16 @@ constexpr GrayView view = DECIMAL;
 
 // GrayCodes array
 template<GrayView V, code_t N,code_t...S>
-struct GrayCodes:GrayCodes<V,N-1,N-1,S...>{};
+struct GrayCodes
+{
+  typedef GrayCodes<V,N-1,N-1,S...> next;
+  static constexpr
+  std::array<code_t,N+sizeof...(S)>
+  make_codes()
+  {
+    return next::make_codes();
+  }
+};
 
 template <GrayView V, code_t...S>
 struct GrayCodes<V,0,S...>
