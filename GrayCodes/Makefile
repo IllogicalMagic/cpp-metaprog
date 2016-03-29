@@ -2,7 +2,9 @@ CXX?=g++
 CC=$(CXX)
 CXXSTD?=c++11
 G_BITS?=4
-CXXFLAGS?=-std=$(CXXSTD) -DG_BITS=$(G_BITS) -Wall -Werror -pedantic-errors -O0
+G_VIEW?=DECIMAL
+CXXFLAGS?=-std=$(CXXSTD) -DG_BITS=$(G_BITS) -DG_VIEW=$(G_VIEW) \
+-Wall -Werror -pedantic-errors -g -O0
 
 all: GrayOld GraySeq
 

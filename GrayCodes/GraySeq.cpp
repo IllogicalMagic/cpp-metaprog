@@ -3,12 +3,8 @@
 #include "GrayShared.hpp"
 #include "GrayDynamic.hpp"
 
-#ifndef G_BITS
-#define G_BITS 4
-#endif
-
 constexpr codesize_t bits = G_BITS;
-constexpr GrayView view = DECIMAL;
+constexpr GrayView view = G_VIEW;
 
 // GrayCodes array
 template<GrayView V, code_t N,code_t...S>

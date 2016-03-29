@@ -1,6 +1,14 @@
 #ifndef GRAY_SHARED_H_DEFINED_
 #define GRAY_SHARED_H_DEFINED_
 
+#ifndef G_BITS
+#define G_BITS 4ul
+#endif
+
+#ifndef G_VIEW
+#define G_VIEW DECIMAL
+#endif
+
 #if __cplusplus==199711L
 
 typedef unsigned long g_uint_t;

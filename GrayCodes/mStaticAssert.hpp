@@ -13,7 +13,7 @@ struct mStaticAssert<true>
 template<>
 class mStaticAssert<false>
 {
-  mStaticAssert(const char*){};
+  mStaticAssert(const char*){}
 };
 
 #endif

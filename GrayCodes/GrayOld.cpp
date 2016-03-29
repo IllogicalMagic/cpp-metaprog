@@ -3,13 +3,9 @@
 #include "GrayShared.hpp"
 #include "mStaticAssert.hpp"
 
-#ifndef G_BITS
-#define G_BITS 4ul
-#endif
-
 // Size and visualization of Gray codes
 const codesize_t bit=G_BITS;
-const GrayView view=DECIMAL;
+const GrayView view=G_VIEW;
 
 // List with Gray codes
 template<GrayView T, code_t Val>
