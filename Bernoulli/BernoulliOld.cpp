@@ -4,6 +4,7 @@
 #include <array>
 
 #include "DynamicRatio.hpp"
+#include "BernoulliDynamic.hpp"
 
 #ifndef B_SIZE
 #define B_SIZE 3ul
@@ -115,8 +116,13 @@ int main()
 {
   std::array<DRatio::DRatio,size+1> stat_bern;
   BernoulliList<size>::fill(stat_bern);
-  for (bern i=0;i<size;++i)
+  for (bern i=0;i<size+1;++i)
     std:: cout << stat_bern[i] << '\n';
-  std::cout << DRatio::DRatio(-10,5) << '\n';
+  std::cout << "---\n";
+
+  std::array<DRatio::DRatio,size+1> dyn_bern;
+  dyn_fill(dyn_bern);
+  for (bern i=0;i<size+1;++i)
+    std::cout << dyn_bern[i] << '\n';
   return 0;
 }
