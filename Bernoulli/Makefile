@@ -10,9 +10,11 @@ all: BernoulliOld
 dotest: all
 	./BernoulliOld
 
-BernoulliOld: BernoulliOld.o
+BernoulliOld: BernoulliOld.o DynamicRatio.o
 
 BernoulliOld.o: BernoulliOld.cpp DynamicRatio.hpp
+
+DynamicRatio.o: DynamicRatio.cpp DynamicRatio.hpp
 
 clean:
 	rm -f BernoulliOld *.o *~ *.s

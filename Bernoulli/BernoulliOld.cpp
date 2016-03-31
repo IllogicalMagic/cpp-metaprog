@@ -53,11 +53,32 @@ struct BSum<N,1>
      typename Bernoulli<N-1>::value>;
 };
 
+template<bern N,bool Opt>
+struct BernFast;
+
 template<bern N>
-struct Bernoulli
+struct BernFast<N,true>
+{
+  using value=std::ratio<0>;
+};
+
+template<bern N>
+struct BernFast<N,false>
 {
   using value=
     std::ratio_multiply<std::ratio<-1,N+1>,typename BSum<N>::value>;
+};
+
+template<bern N>
+struct Bernoulli
+{
+  using value=typename BernFast<N,N&1>::value;
+};
+
+template<>
+struct Bernoulli<1>
+{
+  using value = std::ratio<-1,2>;
 };
 
 template<>
@@ -71,7 +92,7 @@ template<bern N>
 struct BernoulliList
 {
   template<size_t Size>
-  static void fill(std::array<DRatio,Size>& a)
+  static void fill(std::array<DRatio::DRatio,Size>& a)
   {
     a[N].num=Bernoulli<N>::value::num;
     a[N].den=Bernoulli<N>::value::den;
@@ -83,7 +104,7 @@ template<>
 struct BernoulliList<0>
 {
   template<size_t Size>
-  static void fill(std::array<DRatio,Size>& a)
+  static void fill(std::array<DRatio::DRatio,Size>& a)
   {
     a[0].num=Bernoulli<0>::value::num;
     a[0].den=Bernoulli<0>::value::den;
@@ -92,9 +113,10 @@ struct BernoulliList<0>
 
 int main()
 {
-  std::array<DRatio,size+1> stat_bern;
+  std::array<DRatio::DRatio,size+1> stat_bern;
   BernoulliList<size>::fill(stat_bern);
   for (bern i=0;i<size;++i)
     std:: cout << stat_bern[i] << '\n';
+  std::cout << DRatio::DRatio(-10,5) << '\n';
   return 0;
 }
