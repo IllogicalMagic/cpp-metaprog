@@ -55,4 +55,6 @@ void dyn_fill(std::array<DRatio::DRatio,N>& a)
   }
 }
 
+bool check_value(DRatio::DRatio&,DRatio::DRatio&,size_t);
+
 #endif

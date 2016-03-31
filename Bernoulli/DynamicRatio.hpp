@@ -53,6 +53,11 @@ struct DRatio
   }
   DRatio& operator/=(const DRatio&& rhs) {return *this/=rhs;}
 
+  bool operator==(const DRatio& rhs) 
+  {
+    return (num==rhs.num && den==rhs.den);
+  }
+  
 private:
   void simplify()
   {

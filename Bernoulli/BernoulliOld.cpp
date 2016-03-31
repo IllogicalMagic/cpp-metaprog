@@ -116,13 +116,14 @@ int main()
 {
   std::array<DRatio::DRatio,size+1> stat_bern;
   BernoulliList<size>::fill(stat_bern);
-  for (bern i=0;i<size+1;++i)
-    std:: cout << stat_bern[i] << '\n';
-  std::cout << "---\n";
-
   std::array<DRatio::DRatio,size+1> dyn_bern;
   dyn_fill(dyn_bern);
+
+  bool success=true;
   for (bern i=0;i<size+1;++i)
-    std::cout << dyn_bern[i] << '\n';
+    success=check_value(stat_bern[i],dyn_bern[i],i);
+
+  if (success)
+    std::cout << __FILE__ << " succesfully passed tests!\n";
   return 0;
 }
