@@ -12,7 +12,8 @@ dotest: all
 
 BernoulliOld: BernoulliOld.o DynamicRatio.o BernoulliDynamic.o
 
-BernoulliOld.o: BernoulliOld.cpp DynamicRatio.hpp BernoulliDynamic.hpp
+BernoulliOld.o: BernoulliOld.cpp DynamicRatio.hpp BernoulliDynamic.hpp \
+	BernoulliShared.hpp
 
 DynamicRatio.o: DynamicRatio.cpp DynamicRatio.hpp
 
