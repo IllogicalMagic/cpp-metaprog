@@ -57,4 +57,18 @@ void dyn_fill(std::array<DRatio::DRatio,N>& a)
 
 bool check_value(DRatio::DRatio&,DRatio::DRatio&,size_t);
 
+template<size_t N>
+void bern_test(std::array<DRatio::DRatio,N>& stat_bern)
+{
+  std::array<DRatio::DRatio,N> dyn_bern;
+  dyn_fill(dyn_bern);
+
+  bool success=true;
+  for (size_t i=0;i<N;++i)
+    success=check_value(stat_bern[i],dyn_bern[i],i);
+
+  if (success)
+    std::cout << __FILE__ << " succesfully passed tests!\n";
+}
+
 #endif

@@ -51,14 +51,6 @@ int main()
 {
   std::array<DRatio::DRatio,size+1> stat_bern;
   BernoulliList<size>::fill(stat_bern);
-  std::array<DRatio::DRatio,size+1> dyn_bern;
-  dyn_fill(dyn_bern);
-
-  bool success=true;
-  for (bern i=0;i<size+1;++i)
-    success=check_value(stat_bern[i],dyn_bern[i],i);
-
-  if (success)
-    std::cout << __FILE__ << " succesfully passed tests!\n";
+  bern_test(stat_bern);
   return 0;
 }
