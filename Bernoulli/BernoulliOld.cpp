@@ -17,7 +17,7 @@ struct BSumOld
   using value=
     std::ratio_add
     <std::ratio_multiply
-     <typename Binomial<N+1,K+1>::value,
+     <typename BinomCoeff<N+1,K+1>::value,
       typename Bernoulli<N-K>::value>,
     typename BSumOld<N,K-1>::value>;
 };
@@ -27,7 +27,7 @@ struct BSumOld<N,1>
 {
   using value=
     std::ratio_multiply
-    <typename Binomial<N+1,2>::value,
+    <typename BinomCoeff<N+1,2>::value,
      typename Bernoulli<N-1>::value>;
 };
 

@@ -41,7 +41,7 @@ struct BSum
   auto compute(Seq<S...>) ->
     typename SumFoldl<		// Sum 1..N
     std::ratio_multiply		// C(N+1,K+1)*B(N-K)
-      <typename Binomial<N+1,S+1>::value,
+      <typename BinomCoeff<N+1,S+1>::value,
       typename Bernoulli<N-S>::value> ...>::value;
 
   using value = decltype(compute(typename Gen<1,N+1>::seq()));

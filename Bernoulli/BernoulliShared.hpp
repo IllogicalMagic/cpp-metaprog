@@ -13,20 +13,24 @@
 
 using bern = std::uint64_t;
 
+template<bern N, bern K>
+struct Binomial;
+
+// To lower number of generated classes
+template<bern N, bern K>
+using BinomCoeff=Binomial<N, (K < N-K) ? K : N-K>;
+
 // Binomial quotient C(n,k)
 template<bern N, bern K>
 struct Binomial
 {
   using value=
-    std::ratio_add<typename Binomial<N-1,K-1>::value,
-		   typename Binomial<N-1,K>::value>;
+    std::ratio_add<typename BinomCoeff<N-1,K-1>::value,
+		   typename BinomCoeff<N-1,K>::value>;
 };
 
 template<bern N>
 struct Binomial<N,0>{using value=std::ratio<1>;};
-
-template<bern N>
-struct Binomial<N,N>{using value=std::ratio<1>;};
 
 // Struct for computing sum for Bernoulli number
 // Should be implemented in modules
