@@ -33,6 +33,21 @@ struct UserCopy
   UserCopy(const UserCopy&) {}
 };
 
+struct Dtor
+{
+  ~Dtor() {}
+};
+
+struct Assign
+{
+  Assign& operator=(const Assign&) {return *this;}
+};
+
+struct MoveAssign
+{
+  MoveAssign& operator=(MoveAssign&&) {return *this;}
+};
+
 template<typename T>
 void test_copy()
 {
@@ -69,6 +84,7 @@ int main()
 {
   test_copy<int,char,bool,unsigned,
 	    DefCopy,DelCopy,ImplicitCopy,MoveCtor,UserCopy,
+	    Dtor,Assign,MoveAssign,
 	    std::vector<DefCopy>,std::vector<MoveCtor>,
 	    std::array<ImplicitCopy,3>,std::array<UserCopy,10>,
 	    std::tuple<ImplicitCopy,UserCopy>,

@@ -18,6 +18,7 @@ struct isTriviallyCopyableImpl
      *ay=*cx,			// check for trivial assignment
      new X(std::move(*ay)),	// check for trivial move ctor
      *az=std::move(*ay),	// check for trivial move assignment
+     delete ay,			// check for trivial dtor
      cx);
   
   template<typename X>
