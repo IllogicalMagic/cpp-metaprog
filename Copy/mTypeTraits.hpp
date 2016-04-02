@@ -5,19 +5,27 @@
 template<typename T>
 struct isTriviallyCopyableImpl
 {
+  // ISO/IEC 14882:2014
+  // 9(6) - trivially copyable type
+  // 9.5 (2) - non-trivial ctors will be deleted from union
   union U {T a;};
   typedef U* no[2];
   
   template<typename X>
   static constexpr auto
-  isCpb(const X* x) -> decltype(new X(*x));
+  isCpb(const X* cx,X* ay,X* az) -> decltype
+    (new X(*cx),		// check for trivial copy ctor
+     *ay=*cx,			// check for trivial assignment
+     new X(std::move(*ay)),	// check for trivial move ctor
+     *az=std::move(*ay),	// check for trivial move assignment
+     cx);
   
   template<typename X>
   static constexpr no&
   isCpb(...);
   
   static constexpr bool value = 
-    sizeof( isCpb<U>(nullptr) )!=sizeof(no);
+    sizeof( isCpb<U>(nullptr,nullptr,nullptr) )!=sizeof(no);
 };
 
 template<typename T>
