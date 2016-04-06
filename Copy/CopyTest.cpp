@@ -10,6 +10,7 @@ void test_arr();
 void test_arr_vec();
 void test_nontrivcopy();
 void test_const_source();
+void test_bitwise_support();
 
 int main()
 {
@@ -17,6 +18,7 @@ int main()
   test_arr_vec();
   test_nontrivcopy();
   test_const_source();
+  test_bitwise_support();
   return 0;
 }
 
@@ -27,6 +29,7 @@ void print_result(bool cond, int num)
   else std::cout << "Test " << num << " failed!\n";
 }
 
+// Test 1
 // std::array is trivially copyable class
 void test_arr()
 {
@@ -56,6 +59,7 @@ void test_arr()
   print_result(success,1);
 }
 
+// Test 2
 // std::vector is not trivially copyable
 void test_arr_vec()
 {
@@ -73,6 +77,8 @@ void test_arr_vec()
   print_result(success,2);
 }
 
+// Test 3
+// Has user-defined copy ctor
 struct CopyStruct
 {
   int a,b;
@@ -101,6 +107,8 @@ void test_nontrivcopy()
   print_result(success,3);
 }
 
+// Test 4
+// Source is constant but it is trivially copyable
 void test_const_source()
 {
   constexpr size_t sz = 3;
@@ -115,4 +123,42 @@ void test_const_source()
     success&=(a[i]==b[i]);
   }
   print_result(success,4);
+}
+
+// Test 5
+struct NonTrivialCopy
+{
+  int x;
+  NonTrivialCopy() {x=7;}
+  NonTrivialCopy(const NonTrivialCopy& rhs):
+    x(rhs.x) {}
+
+  NonTrivialCopy& operator=(const NonTrivialCopy&) = default;
+};
+
+// Add to list of copied types
+template<>
+struct hasBitwiseCopy<NonTrivialCopy>
+{
+  static constexpr bool value = true;
+};
+
+void test_bitwise_support()
+{
+  constexpr size_t sz = 3;
+  using test_type = NonTrivialCopy;
+  
+  test_type a[sz];
+  for (size_t i=0;i<sz;++i) {
+    a[i].x=2*i;
+  }
+  test_type b[sz*2];
+
+  Copy(a,a+sz,b+sz);
+  
+  bool success=true;
+  for (size_t i=0;i<sz;++i) {
+    success&=(a[i].x==b[i+sz].x);
+  }
+  print_result(success,5);
 }
