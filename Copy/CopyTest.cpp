@@ -4,16 +4,27 @@
 
 #include "Copy.hpp"
 
+void print_result(bool);
+
 void test_arr();
 void test_arr_vec();
 void test_nontrivcopy();
+void test_const_source();
 
 int main()
 {
   test_arr();
   test_arr_vec();
   test_nontrivcopy();
+  test_const_source();
   return 0;
+}
+
+void print_result(bool cond, int num)
+{
+  if (cond)
+    std::cout << "Test " << num << " passed!\n";
+  else std::cout << "Test " << num << " failed!\n";
 }
 
 // std::array is trivially copyable class
@@ -22,6 +33,7 @@ void test_arr()
   constexpr size_t intr = 5;
   constexpr size_t extr = 5;
   using val = unsigned;
+  using val2 = val;
 
   std::array<std::array
 	     <val,intr>,extr> a;
@@ -32,7 +44,7 @@ void test_arr()
     }
   }
 
-  std::array<std::array<val,intr>,extr> b;
+  std::array<std::array<val2,intr>,extr> b;
   Copy(a.begin(),a.begin()+extr,b.begin());
 
   bool success=true;
@@ -41,9 +53,7 @@ void test_arr()
       success&= (a[i][j]==b[i][j]);
     }
   }
-  if (success)
-    std::cout << "Test 1 passed!\n";
-  else std::cout << "Test 1 failed!\n";
+  print_result(success,1);
 }
 
 // std::vector is not trivially copyable
@@ -60,9 +70,7 @@ void test_arr_vec()
   for (size_t i=0;i<sz;++i) {
     success&=a[i]==b[i];
   }
-  if (success)
-    std::cout << "Test 1 passed!\n";
-  else std::cout << "Test 1 failed!\n";
+  print_result(success,2);
 }
 
 struct CopyStruct
@@ -90,7 +98,21 @@ void test_nontrivcopy()
   for (size_t i=0;i<sz;++i) {
     success&=(a[i].a==b[i].a && a[i].b==b[i].b);
   }
-  if (success)
-    std::cout << "Test 1 passed!\n";
-  else std::cout << "Test 1 failed!\n";
+  print_result(success,3);
+}
+
+void test_const_source()
+{
+  constexpr size_t sz = 3;
+  
+  const int a[sz] = {1,6,2};
+
+  int b[sz];
+  Copy(a,a+sz,b);
+  
+  bool success=true;
+  for (size_t i=0;i<sz;++i) {
+    success&=(a[i]==b[i]);
+  }
+  print_result(success,4);
 }

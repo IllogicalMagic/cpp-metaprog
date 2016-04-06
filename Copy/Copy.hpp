@@ -5,6 +5,7 @@
 #include <cstring>
 #include <vector>
 #include <array>
+#include <type_traits>
 
 #include "mTypeTraits.hpp"
 
@@ -40,11 +41,20 @@ struct CopySelect<true,In,Out>
 template<typename In, typename Out>
 void Copy(In begin, In end, Out out)
 {
-  CopySelect<isPointer<In>::value && isPointer<Out>::value 
-	     && isTriviallyCopyable<decltype(*begin)>::value 
-	     && isTriviallyCopyable<decltype(*out)>::value 
-	     && isEqualSizePtr<In,Out>::value,
-	     In,Out>::select(begin,end,out);
+  using in_type = typename getPointedType<In>::type;
+  using out_type = typename getPointedType<Out>::type;
+
+  static_assert
+    (std::is_assignable<out_type&,in_type>::value,
+     "Out type is not assignable");
+
+  CopySelect<
+    (std::is_pointer<In>::value && std::is_pointer<Out>::value) &&
+    ((std::is_trivially_copyable<in_type>::value &&
+      std::is_trivially_copyable<out_type>::value) ||
+     (hasBitwiseCopy<in_type>::value &&
+      hasBitwiseCopy<out_type>::value)),
+    In,Out>::select(begin,end,out);
 }
 
 #endif

@@ -86,4 +86,22 @@ struct isEqualSizePtr<T1*,T2*>
 
 // isEqualSizePtr end
 
+template<typename Iter>
+struct getPointedType
+{
+  using type = typename Iter::value_type;
+};
+
+template<typename T>
+struct getPointedType<T*>
+{
+  using type = T;
+};
+
+template<typename T>
+struct hasBitwiseCopy
+{
+  static constexpr bool value = false;
+};
+
 #endif
