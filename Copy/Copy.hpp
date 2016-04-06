@@ -3,8 +3,6 @@
 
 #include <iostream>
 #include <cstring>
-#include <vector>
-#include <array>
 #include <type_traits>
 
 #include "mTypeTraits.hpp"
@@ -12,7 +10,7 @@
 template<typename In, typename Out>
 void CopyFast(In* begin, In* end, Out* out)
 {
-  std::cout << "FastCopy!\n";
+  std::cout << "MemCpy!\n";
   std::memcpy((void*)out,
 	      (const void*)begin,
 	      (end-begin)*sizeof(In));
@@ -51,6 +49,9 @@ void Copy(In begin, In end, Out out)
   static_assert
     (std::is_assignable<out_type&,in_type>::value,
      "Out type is not assignable");
+  static_assert
+    (std::is_same<out_type,in_type>::value,
+     "In and out types are not the same");
 
   CopySelect<
     (std::is_pointer<In>::value && std::is_pointer<Out>::value) &&

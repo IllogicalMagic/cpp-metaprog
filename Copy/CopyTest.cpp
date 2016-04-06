@@ -1,6 +1,7 @@
 #include <iostream>
 #include <array>
 #include <vector>
+#include <iterator>
 
 #include "Copy.hpp"
 
@@ -11,6 +12,8 @@ void test_arr_vec();
 void test_nontrivcopy();
 void test_const_source();
 void test_bitwise_support();
+void test_move();
+void test_copy();
 
 int main()
 {
@@ -19,6 +22,8 @@ int main()
   test_nontrivcopy();
   test_const_source();
   test_bitwise_support();
+  test_move();
+  test_copy();
   return 0;
 }
 
@@ -161,3 +166,61 @@ void test_bitwise_support()
   }
   print_result(success,5);
 }
+
+struct WithMove
+{
+  int x;
+  WithMove():x(0) {}
+
+  WithMove& operator=(WithMove&& rhs)
+  {
+    std::cout << "Move assignment is called!\n";
+    x=1;
+    rhs.x=2;
+    return *this;
+  }
+
+  WithMove& operator=(const WithMove& rhs)
+  {
+    std::cout << "Assignment is called!\n";
+    x=2;
+    return *this;
+  }
+};
+
+void test_move()
+{
+  constexpr size_t sz = 3;
+  using test_type = WithMove;
+  
+  test_type a[sz];
+  test_type b[sz];
+
+  Copy(std::make_move_iterator(std::begin(a)),
+       std::make_move_iterator(std::end(a)),
+       b);
+  
+  bool success=true;
+  for (size_t i=0;i<sz;++i) {
+    success&=(a[i].x==2 && b[i].x==1);
+  }
+  print_result(success,6);
+}
+
+void test_copy()
+{
+  constexpr size_t sz = 3;
+  using test_type = WithMove;
+  
+  test_type a[sz];
+  test_type b[sz];
+
+  Copy(a,a+sz,b);
+  
+  bool success=true;
+  for (size_t i=0;i<sz;++i) {
+    success&=(b[i].x==2 && a[i].x==0);
+  }
+  print_result(success,7);
+}
+
