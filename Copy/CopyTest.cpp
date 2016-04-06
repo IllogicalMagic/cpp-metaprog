@@ -130,6 +130,7 @@ struct NonTrivialCopy
 {
   int x;
   NonTrivialCopy() {x=7;}
+  NonTrivialCopy(int i):x(i) {}
   NonTrivialCopy(const NonTrivialCopy& rhs):
     x(rhs.x) {}
 
@@ -148,11 +149,9 @@ void test_bitwise_support()
   constexpr size_t sz = 3;
   using test_type = NonTrivialCopy;
   
-  test_type a[sz];
-  for (size_t i=0;i<sz;++i) {
-    a[i].x=2*i;
-  }
-  test_type b[sz*2];
+  volatile const test_type a[sz] {8,1,2};
+
+  volatile test_type b[sz*2];
 
   Copy(a,a+sz,b+sz);
   

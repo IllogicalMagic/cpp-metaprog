@@ -13,7 +13,9 @@ template<typename In, typename Out>
 void CopyFast(In* begin, In* end, Out* out)
 {
   std::cout << "FastCopy!\n";
-  std::memcpy(out,begin,(end-begin)*sizeof(In));
+  std::memcpy((void*)out,
+	      (const void*)begin,
+	      (end-begin)*sizeof(In));
 }
 
 template<typename In, typename Out>
@@ -41,8 +43,10 @@ struct CopySelect<true,In,Out>
 template<typename In, typename Out>
 void Copy(In begin, In end, Out out)
 {
-  using in_type = typename getPointedType<In>::type;
-  using out_type = typename getPointedType<Out>::type;
+  using in_type = typename std::remove_cv
+    <typename getPointedType<In>::type>::type;
+  using out_type = typename std::remove_volatile
+    <typename getPointedType<Out>::type>::type;
 
   static_assert
     (std::is_assignable<out_type&,in_type>::value,
