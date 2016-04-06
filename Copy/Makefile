@@ -4,19 +4,19 @@ CXXSTD?=c++14
 CXXFLAGS?=-Wall -Werror --pedantic-errors -g -O0
 CXXFLAGS+=-std=$(CXXSTD)
 
-all: TypeTests Copy
+all: TypeTests CopyTest
 
 dotest: all
 	./TypeTests
-	./Copy
+	./CopyTest
 
-Copy: Copy.o
+CopyTest: CopyTest.o
 
-Copy.o: Copy.cpp mTypeTraits.hpp
+CopyTest.o: CopyTest.cpp Copy.hpp mTypeTraits.hpp
 
 TypeTests: TypeTests.o
 
 TypeTests.o: TypeTests.cpp mTypeTraits.hpp
 
 clean:
-	rm -f *.o *~ TypeTests Copy
+	rm -f *.o *~ TypeTests CopyTest

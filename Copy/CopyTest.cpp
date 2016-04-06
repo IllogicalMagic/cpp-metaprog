@@ -1,48 +1,8 @@
 #include <iostream>
-#include <cstring>
-#include <vector>
 #include <array>
+#include <vector>
 
-#include "mTypeTraits.hpp"
-
-template<typename In, typename Out>
-void CopyFast(In* begin, In* end, Out* out)
-{
-  std::cout << "FastCopy!\n";
-  std::memcpy(out,begin,(end-begin)*sizeof(decltype(*begin)));
-}
-
-template<typename In, typename Out>
-void CopyNormal(In begin, In end, Out out)
-{
-  std::cout << "NormalCopy.\n";
-  while (begin!=end)
-    *out++=*begin++;
-}
-
-template<bool Type, typename In, typename Out>
-struct CopySelect
-{
-  static void select(In begin, In end, Out out)
-  {CopyNormal(begin,end,out);}
-};
-
-template<typename In, typename Out>
-struct CopySelect<true,In,Out>
-{
-  static void select(In begin, In end, Out out)
-  {CopyFast(begin,end,out);}
-};
-
-template<typename In, typename Out>
-void Copy(In begin, In end, Out out)
-{
-  CopySelect<isPointer<In>::value && isPointer<Out>::value 
-	     && isTriviallyCopyable<decltype(*begin)>::value 
-	     && isTriviallyCopyable<decltype(*out)>::value 
-	     && isEqualSizePtr<In,Out>::value,
-	     In,Out>::select(begin,end,out);
-}
+#include "Copy.hpp"
 
 void test_arr();
 void test_arr_vec();
@@ -61,25 +21,24 @@ void test_arr()
 {
   constexpr size_t intr = 5;
   constexpr size_t extr = 5;
-  using val2 = unsigned;
+  using val = unsigned;
 
   std::array<std::array
-	     <std::array<unsigned char,sizeof(val2)>,intr>,extr> a;
+	     <val,intr>,extr> a;
 
   for (size_t i=0;i<extr;++i) {
     for (size_t j=0;j<intr;++j) {
-      for (size_t k=0;k<sizeof(val2);++k)
-	a[i][j][k]=1<<k;
+	a[i][j]=1<<j;
     }
   }
 
-  std::array<std::array<val2,intr>,extr> b;
+  std::array<std::array<val,intr>,extr> b;
   Copy(a.begin(),a.begin()+extr,b.begin());
 
   bool success=true;
   for (size_t i=0;i<extr;++i) {
     for (size_t j=0;j<intr;++j) {
-      success&=!std::memcmp(a[i][j].begin(),&b[i][j],sizeof(val2));
+      success&= (a[i][j]==b[i][j]);
     }
   }
   if (success)
