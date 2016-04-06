@@ -13,7 +13,7 @@ template<typename In, typename Out>
 void CopyFast(In* begin, In* end, Out* out)
 {
   std::cout << "FastCopy!\n";
-  std::memcpy(out,begin,(end-begin)*sizeof(decltype(*begin)));
+  std::memcpy(out,begin,(end-begin)*sizeof(In));
 }
 
 template<typename In, typename Out>
