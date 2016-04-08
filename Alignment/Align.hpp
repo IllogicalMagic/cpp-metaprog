@@ -18,15 +18,26 @@ template<typename T,int A,int N,int...S>
 struct Filter;
 
 template<bool C,typename T,int A,int N,int...S>
-struct FilterSelect: Filter<T,A,N-1,N-1,S...> {};
+struct FilterSelect: 
+  FilterSelect<alignof(typename std::tuple_element<N-1,T>::type)==A,
+  T,A,N-1,N,S...> {};
 
 template<typename T,int A,int N,int...S>
-struct FilterSelect<false,T,A,N,S...>: Filter<T,A,N-1,S...> {};
+struct FilterSelect<false,T,A,N,S...>: 
+  FilterSelect<alignof(typename std::tuple_element<N-1,T>::type)==A,
+  T,A,N-1,S...> {};
+
+template<typename T,int A,int...S>
+struct FilterSelect<true,T,A,0,S...>: Filter<T,A,0,0,S...> {};
+
+template<typename T,int A,int...S>
+struct FilterSelect<false,T,A,0,S...>: Filter<T,A,0,S...> {};
+
 
 template<typename T,int A,int N,int...S>
 struct Filter: 
   FilterSelect<alignof(typename std::tuple_element<N-1,T>::type)==A,
-	       T,A,N,S...> {};
+	       T,A,N-1,S...> {};
 
 template<typename T,int A,int...S>
 struct Filter<T,A,0,S...> {typedef Seq<S...> seq;};

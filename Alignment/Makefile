@@ -2,7 +2,8 @@ CXX?=g++
 CC=$(CXX)
 CXXSTD=c++14
 CXXFLAGS=-Wall -Werror --pedantic-errors -g -O0
-CXXFLAGS+=-std=$(CXXSTD) $(CXXOPT)
+CXXFLAGS+=-std=$(CXXSTD)
+CXXFLAGS+=$(CXXOPT)
 
 all: Tests
 
