@@ -1,3 +1,6 @@
+#include <iostream>
+#include <typeinfo>
+
 #include "Align.hpp"
 
 void print(){}

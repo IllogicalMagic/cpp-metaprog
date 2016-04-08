@@ -1,8 +1,7 @@
-#include <iostream>
-#include <cstddef>
+#ifndef ALIGN_SORT_HPP_INCLUDED_
+#define ALIGN_SORT_HPP_INCLUDED_
+
 #include <tuple>
-#include <utility>
-#include <typeinfo>
 
 template<int...S>
 struct Seq {};
@@ -26,7 +25,8 @@ struct FilterSelect<false,T,A,N,S...>: Filter<T,A,N-1,S...> {};
 
 template<typename T,int A,int N,int...S>
 struct Filter: 
-  FilterSelect<alignof(decltype(std::get<N-1>( T() )))==A,T,A,N,S...> {};
+  FilterSelect<alignof(typename std::tuple_element<N-1,T>::type)==A,
+	       T,A,N,S...> {};
 
 template<typename T,int A,int...S>
 struct Filter<T,A,0,S...> {typedef Seq<S...> seq;};
@@ -88,4 +88,6 @@ struct TupleSort<std::tuple<>>
 {
   using type = std::tuple<>;
 };
+
+#endif
 
