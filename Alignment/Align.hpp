@@ -1,53 +1,35 @@
 #ifndef ALIGN_SORT_HPP_INCLUDED_
 #define ALIGN_SORT_HPP_INCLUDED_
 
+#include <utility>
 #include <tuple>
-
-template<int...S>
-struct Seq {};
 
 // Generate powers of two
 template<int N,int...S>
 struct AlignList: AlignList<(N>>1),N,S...> {};
 
 template<int...S>
-struct AlignList<0,S...> {typedef Seq<S...> seq;};
+struct AlignList<0,S...> {typedef std::index_sequence<S...> seq;};
 
 // Struct to filter tuple
-template<typename T,int A,int N,int...S>
-struct Filter;
-
-template<bool C,typename T,int A,int N,int...S>
-struct FilterSelect: 
-  FilterSelect<alignof(typename std::tuple_element<N-1,T>::type)==A,
-  T,A,N-1,N,S...> {};
-
-template<typename T,int A,int N,int...S>
-struct FilterSelect<false,T,A,N,S...>: 
-  FilterSelect<alignof(typename std::tuple_element<N-1,T>::type)==A,
-  T,A,N-1,S...> {};
-
-template<typename T,int A,int...S>
-struct FilterSelect<true,T,A,0,S...>: Filter<T,A,0,0,S...> {};
-
-template<typename T,int A,int...S>
-struct FilterSelect<false,T,A,0,S...>: Filter<T,A,0,S...> {};
-
-
-template<typename T,int A,int N,int...S>
+template<typename T,int A,int N,size_t...S>
 struct Filter: 
-  FilterSelect<alignof(typename std::tuple_element<N-1,T>::type)==A,
-	       T,A,N-1,S...> {};
+  std::conditional<
+  alignof(typename std::tuple_element<N-1,T>::type)==A,
+  Filter<T,A,N-1,N-1,S...>,Filter<T,A,N-1,S...>>::type {};
 
-template<typename T,int A,int...S>
-struct Filter<T,A,0,S...> {typedef Seq<S...> seq;};
+template<typename T,int A,size_t...S>
+struct Filter<T,A,0,S...> {typedef std::index_sequence<S...> seq;};
 
 // Implementation for all tuples
 template<typename T,typename Aligns>
 struct TupleSortImpl
 {
+  template<size_t...S>
+  using Seq = std::index_sequence<S...>;
+
   // Concatenate two sequences of int
-  template<int... S1,int... S2>
+  template<size_t... S1,size_t... S2>
   static constexpr auto
   concat_seq(Seq<S1...>,Seq<S2...>)
     -> Seq<S1...,S2...>;
@@ -60,14 +42,14 @@ struct TupleSortImpl
 
   // Get indexes of elements in right position
   // For <int,char> will be <1,0>
-  template<int...S>
+  template<size_t...S>
   static constexpr auto
   indexes(Seq<S...>)
     -> decltype(concat_seq
 		(typename Filter<T,S,std::tuple_size<T>::value>::seq()...));
 
   // Form reordered tuple from old tuple
-  template<int...S>
+  template<size_t...S>
   static constexpr auto
   get_tuple(Seq<S...>,T t)
     -> decltype(std::make_tuple(std::get<S>(t)...));
@@ -78,7 +60,7 @@ struct TupleSortImpl
 
 // For tuples with alignof == 1
 template<typename T>
-struct TupleSortImpl<T,Seq<1>>
+struct TupleSortImpl<T,std::index_sequence<1>>
 {
   using type = T;
 };
