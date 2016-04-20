@@ -6,7 +6,7 @@
 
 // Struct to filter tuple
 template<typename T,template <typename E> class Elem2Val,
-	 int A,int N,size_t...S>
+	 typename Elem2Val<char>::value_type A,size_t N,size_t...S>
 struct Filter: 
   std::conditional<
   Elem2Val<typename std::tuple_element<N-1,T>::type>::value==A,
@@ -14,7 +14,7 @@ struct Filter:
   Filter<T,Elem2Val,A,N-1,S...>>::type {};
 
 template<typename T,template <typename E> class Elem2Val,
-	 int A,size_t...S>
+	 typename Elem2Val<char>::value_type A,size_t...S>
 struct Filter<T,Elem2Val,A,0,S...> {using seq = std::index_sequence<S...>;};
 
 // Implementation for all tuples
@@ -28,7 +28,7 @@ struct TupleSortImpl
   concat_seq()
     -> Seq<>;
 
-  // Concatenate two sequences of int
+  // Concatenate two index sequences
   template<size_t... S1,size_t... S2>
   static constexpr auto
   concat_seq2(Seq<S1...>,Seq<S2...>)
@@ -41,9 +41,9 @@ struct TupleSortImpl
     -> decltype(concat_seq2(s1,concat_seq(rest...)));
 
   // Get indexes of elements in right position
-  template<size_t...S>
+  template<typename Val, Val...S>
   static constexpr auto
-  indexes(Seq<S...>)
+  indexes(std::integer_sequence<Val,S...>)
     -> decltype(concat_seq
 		(typename Filter<T,Elem2Val,S,
 		 std::tuple_size<T>::value>::seq()...));
@@ -66,17 +66,21 @@ struct TupleSortImpl<std::tuple<>,Elem2Val,S>
 };
 
 // Generate powers of two
-template<int N,int...S>
+template<size_t N,size_t...S>
 struct AlignList: AlignList<(N>>1),N,S...> {};
 
-template<int...S>
-struct AlignList<0,S...> {typedef std::index_sequence<S...> seq;};
+template<size_t...S>
+struct AlignList<0,S...> 
+{
+  typedef std::integer_sequence<size_t,S...> seq;
+};
 
 // Elem2Val struct
 template<typename T>
 struct AlignOf
 {
   static constexpr size_t value = alignof(T);
+  using value_type = size_t;
 };
 
 // Main struct
@@ -87,7 +91,7 @@ struct AlignTupleSort
   static constexpr auto max_align = alignof(T);
   using type = 
     typename TupleSortImpl<T,AlignOf,
-			   typename AlignList<max_align>::seq>::type;
+      typename AlignList<max_align>::seq>::type;
 };
 
 #endif

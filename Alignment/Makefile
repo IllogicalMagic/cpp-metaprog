@@ -7,7 +7,7 @@ CXXFLAGS+=$(CXXOPT)
 
 all: Tests GeneralSortTests
 
-dotest: Tests
+dotest: Tests GeneralSortTests
 	./Tests
 	./GeneralSortTests
 

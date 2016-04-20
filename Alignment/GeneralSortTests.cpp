@@ -37,7 +37,7 @@ struct TrivCopySort
 {
   using type = 
     typename TupleSortImpl<T,std::is_trivially_copyable,
-			   std::index_sequence<true,false>>::type;
+			   std::integer_sequence<bool,true,false>>::type;
 };
 
 struct A 
@@ -63,6 +63,7 @@ struct LessThan
   struct LessThanN
   {
     static constexpr bool value = sizeof(T)<N;
+    using value_type = bool;
   };
 };
 
