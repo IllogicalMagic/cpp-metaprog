@@ -11,9 +11,9 @@ dotest: Tests GeneralSortTests
 	./Tests
 	./GeneralSortTests
 
-Tests: Tests.cpp Align.hpp Print.hpp
+Tests: Tests.cpp Align.hpp Print.hpp Sort.hpp
 
-GeneralSortTests: GeneralSortTests.cpp Align.hpp Print.hpp
+GeneralSortTests: GeneralSortTests.cpp Align.hpp Print.hpp Sort.hpp
 
 clean:
 	rm -f *.o *~ Tests GeneralSortTests
