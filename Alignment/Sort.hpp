@@ -55,7 +55,7 @@ struct TupleSortImpl
     -> decltype(std::make_tuple(std::get<S>(t)...));
 
   using type = 
-    decltype(get_tuple(indexes(Values()),T()));
+    decltype(get_tuple(indexes(std::declval<Values>()),std::declval<T>()));
 };
 
 // For empty tuples

@@ -1,7 +1,12 @@
 #include <iostream>
 #include <typeinfo>
 
+#ifdef WITH_BOOST
+#include "BoostAlign.hpp"
+#else
 #include "Align.hpp"
+#endif
+
 #include "Print.hpp"
 
 template<typename T>
