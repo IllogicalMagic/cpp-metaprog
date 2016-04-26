@@ -2,6 +2,7 @@
 #include <tuple>
 #include <utility>
 #include <string>
+#include <complex>
 
 #include "BoostAlign.hpp"
 #include "Print.hpp"
@@ -17,27 +18,9 @@ struct StdGetter
   }   
 };
 
-template<template<size_t>class Getter,
-	 size_t...S,typename...Types>
-void tuple_values_print_impl(std::index_sequence<S...>,
-			     const std::tuple<Types...>& t)
-{
-  std::cout << '(';
-  int dummy[]
-  {(std::cout << Getter<S>::get(t) 
-    << (S==sizeof...(S)-1?')':' '),0)...};
-}
-
-template<template<size_t>class Getter,
-	 typename...Types>
-void tuple_values_print(const std::tuple<Types...>& t)
-{
-  tuple_values_print_impl<Getter>
-    (std::make_index_sequence<sizeof...(Types)>(),t);
-}
-
 struct Test
 {
+  // T will be captured by Getter
   template<typename T>
   struct Impl
   {
@@ -51,6 +34,21 @@ struct Test
 	return T::decoder::template get<N>(t);
       }   
     };
+    
+    // Compare values
+    template<typename...Types,
+	     typename...Sorted,
+	     size_t...S>
+    static bool is_equal(const std::tuple<Types...>& old,
+			 const std::tuple<Sorted...>& sorted,
+			 std::index_sequence<S...>)
+    {
+      bool result=true;
+      bool dummy[] = 
+	{0,result&=
+	 (std::get<S>(old)==T::decoder::template get<S>(sorted))...};
+      return result;
+    }
 
     template<typename...Args>
     static void test_impl(const Args&&... args)
@@ -58,13 +56,19 @@ struct Test
       using tpl = std::tuple<Args...>;
       using sorted = typename AlignTupleSort<tpl>::type;
 
+      tpl t = std::make_tuple(args...);
       sorted ts = 
 	AlignTupleSort<tpl>::make_sorted_tuple(args...);
    
+      std::cout << "Old: ";
+      tuple_values_print<StdGetter>(t);
+      std::cout << "\nSorted: ";
       tuple_values_print<StdGetter>(ts);
       std::cout << '\n';
-      tuple_values_print<Getter>(ts);
-      std::cout << '\n';
+
+      if (is_equal(t,ts,std::make_index_sequence<sizeof...(Args)>()))
+      	std::cout << "Test passed!\n";
+      else std::cout << "Test failed.\n";
     }
   };
 
@@ -76,9 +80,17 @@ struct Test
   }
 };
 
+void delim()
+{
+  std::cout << "---\n";
+}
+
 int main()
 {
   Test::test(1.0,'a',std::string("Hello"),4);
+  delim();
+  Test::test(3.0,std::string("String"),'X',
+  	     std::complex<float>(1.0,5.0));
   return 0;
 }
 

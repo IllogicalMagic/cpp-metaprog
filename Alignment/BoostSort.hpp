@@ -54,13 +54,25 @@ struct Decoder
   }
 
   template<size_t Index>
-  static constexpr auto get(const typename SortImpl::type& t)
+  static constexpr auto& get(typename SortImpl::type& t)
+  {
+    return std::get<recode<Index>()>(t);
+  }
+  
+  template<size_t Index>
+  static constexpr auto&& get(typename SortImpl::type&& t)
+  {
+    return get<Index>(t);
+  }
+
+  template<size_t Index>
+  static constexpr auto& get(const typename SortImpl::type& t)
   {
     return std::get<recode<Index>()>(t);
   }
 
   template<size_t Index>
-  static constexpr auto get(const typename SortImpl::type&& t)
+  static constexpr auto&& get(const typename SortImpl::type&& t)
   {
     return get<Index>(t);
   }

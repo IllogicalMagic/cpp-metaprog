@@ -28,4 +28,28 @@ void print_tuple(std::tuple<S...>)
   std::cout << ')';
 }
 
+template<template<size_t>class Getter,
+	 size_t...S,typename...Types>
+void tuple_values_print_impl(std::index_sequence<S...>,
+			     const std::tuple<Types...>& t)
+{
+  std::cout << '(';
+  char dummy[]
+  {'\0',(std::cout 
+      << Getter<S>::get(t) 
+      << ':'
+      << alignof(decltype(Getter<S>::get(t)))
+      << (S==sizeof...(S)-1?')':','),'\0')...};
+  if (sizeof...(S)==0)
+    std::cout << ')';
+}
+
+template<template<size_t>class Getter,
+	 typename...Types>
+void tuple_values_print(const std::tuple<Types...>& t)
+{
+  tuple_values_print_impl<Getter>
+    (std::make_index_sequence<sizeof...(Types)>(),t);
+}
+
 #endif
