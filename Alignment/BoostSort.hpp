@@ -1,22 +1,24 @@
 #ifndef SORT_WITH_BOOST_HPP_INCLUDED
 #define SORT_WITH_BOOST_HPP_INCLUDED
 
+#include <type_traits>
+#include <utility>
+#include <tuple>
+
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/at.hpp>
 #include <boost/mpl/sort.hpp>
 #include <boost/mpl/size_t.hpp>
 #include <boost/mpl/size.hpp>
-
-#include <type_traits>
-#include <utility>
-#include <tuple>
+#include <boost/mpl/map.hpp>
+#include <boost/mpl/pair.hpp>
 
 // Pair (Elem,Index)
 template<typename T, size_t I>
 struct TupleElem
 {
   using type = T;
-  static constexpr size_t index = I;
+  using index = boost::mpl::size_t<I>;
 };
 
 // Form new predicate for TupleElem<T,I> from predicate for T
@@ -34,12 +36,44 @@ struct GetIndexPred
   using type = IndexPred<T1,T2>;
 };
 
+template<typename SortImpl>
+struct Decoder
+{
+  template<size_t Index>
+  static constexpr auto recode()
+  {
+    using namespace boost;
+
+    using index_map = 
+      typename SortImpl::index_map;
+    using old = mpl::size_t<Index>;
+    using index = typename mpl::at<index_map,old>::type;
+
+    return index::value;
+  }
+
+  template<size_t Index>
+  static constexpr auto get(typename SortImpl::type& t)
+  {
+    return std::get<recode<Index>()>(t);
+  }
+
+  template<size_t Index>
+  static constexpr auto get(typename SortImpl::type&& t)
+  {
+    return get<Index>(t);
+  }
+
+};
+
 template<template <typename T1, typename  T2> class Pred,
 	 typename Tpl>
 struct TupleSortImpl
 {
   using _1 = boost::mpl::_1;
   using _2 = boost::mpl::_2;
+
+  using old_type = Tpl;
 
   // Get new Pred
   template<typename T1,typename T2>
@@ -68,7 +102,26 @@ struct TupleSortImpl
 
   using type = 
     decltype(cont_to_tuple(std::declval<sorted>(),
-			   index_seq() ));
+			     index_seq() ));
+
+  // For make_sorted_tuple
+  template<size_t I>
+  struct OldIndex
+  {
+    static constexpr size_t value = 
+      boost::mpl::at_c<sorted,I>::type::index::value;
+  };
+
+  template<typename Vec, size_t...S>
+  static auto get_index_map(Vec,std::index_sequence<S...>)
+    -> boost::mpl::map<boost::mpl::pair
+    <typename boost::mpl::at_c<Vec,S>::type::index, 
+    boost::mpl::size_t<S>>...>;
+
+  using index_map = decltype(get_index_map(std::declval<sorted>(),
+					   index_seq()));
+
+  using decoder = Decoder<TupleSortImpl<Pred,Tpl>>;
 };
 
 #endif

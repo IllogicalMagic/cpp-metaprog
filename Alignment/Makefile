@@ -8,18 +8,27 @@ CXXFLAGS+=$(CXXOPT)
 Boost%: %.cpp
 	$(CXX) $(CXXFLAGS) -DWITH_BOOST $^ -o $@
 
-all: Tests GeneralSortTests BoostTests
+Boost%: Boost%.cpp
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+all: Tests GeneralSortTests BoostTests BoostGetTests
 
 dotest: all
 	./Tests
 	./GeneralSortTests
 	./BoostTests
+	./BoostGetTests
 
-Tests: Tests.cpp Align.hpp Print.hpp Sort.hpp
+Tests: Tests.cpp Align.hpp Print.hpp
 
-BoostTests: Tests.cpp BoostAlign.hpp Print.hpp BoostSort.hpp
+BoostTests: Tests.cpp BoostAlign.hpp Print.hpp
 
-GeneralSortTests: GeneralSortTests.cpp Align.hpp Print.hpp Sort.hpp
+BoostGetTests: BoostGetTests.cpp BoostAlign.hpp Print.hpp
+
+GeneralSortTests: GeneralSortTests.cpp Align.hpp Print.hpp
+
+Align.hpp: Sort.hpp
+BoostAlign.hpp: BoostSort.hpp
 
 Compare: Tests BoostTests
 	./Tests > Tests.out
@@ -28,4 +37,5 @@ Compare: Tests BoostTests
 	rm Tests.out BoostTests.out
 
 clean:
-	rm -f *.o *~ Tests GeneralSortTests BoostTests
+	rm -f *.o *~ Tests GeneralSortTests BoostTests \
+	BoostGetTests
