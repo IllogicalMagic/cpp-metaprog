@@ -24,31 +24,16 @@ struct AlignTupleSort
   };
 
   using impl = TupleSortImpl<AlignLess,T>;
-
   using type = typename impl::type;
-
   using decoder = typename impl::decoder;
+
+  template<typename... Args>
+  static constexpr auto make_sorted_tuple(Args&&... args)
+  {
+    return impl::make_sorted_tuple_impl
+      (std::make_index_sequence<sizeof...(Args)>(),
+       std::forward<Args>(args)...);
+  }
 };
-
-template<size_t...S,typename...Args>
-constexpr auto make_sorted_tuple_impl(std::index_sequence<S...>,
-			    Args&&... args)
-{
-  using tpl = decltype(std::make_tuple(args...));
-  using sorted = typename AlignTupleSort<tpl>::type;
-  using impl = typename AlignTupleSort<tpl>::impl;
-  auto tmp = std::tie(args...);
-
-  return 
-    sorted(std::get<impl::template OldIndex<S>::value>(tmp)...);
-}
-
-template<typename... Args>
-constexpr auto make_sorted_tuple(Args&&... args)
-{
-  return make_sorted_tuple_impl
-    (std::make_index_sequence<sizeof...(Args)>(),
-     std::forward<Args>(args)...);
-}
 
 #endif

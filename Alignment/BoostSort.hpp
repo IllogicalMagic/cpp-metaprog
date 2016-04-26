@@ -36,6 +36,7 @@ struct GetIndexPred
   using type = IndexPred<T1,T2>;
 };
 
+// Get element from new tuple with old index
 template<typename SortImpl>
 struct Decoder
 {
@@ -53,13 +54,13 @@ struct Decoder
   }
 
   template<size_t Index>
-  static constexpr auto get(typename SortImpl::type& t)
+  static constexpr auto get(const typename SortImpl::type& t)
   {
     return std::get<recode<Index>()>(t);
   }
 
   template<size_t Index>
-  static constexpr auto get(typename SortImpl::type&& t)
+  static constexpr auto get(const typename SortImpl::type&& t)
   {
     return get<Index>(t);
   }
@@ -72,8 +73,6 @@ struct TupleSortImpl
 {
   using _1 = boost::mpl::_1;
   using _2 = boost::mpl::_2;
-
-  using old_type = Tpl;
 
   // Get new Pred
   template<typename T1,typename T2>
@@ -90,8 +89,7 @@ struct TupleSortImpl
     -> boost::mpl::vector<TupleElem<Args,S>...>;
 
   using vec_types = 
-    decltype(tuple_to_vector( std::declval<Tpl>(),
-			      index_seq() ));
+    decltype(tuple_to_vector(std::declval<Tpl>(),index_seq()));
   using sorted = 
     typename boost::mpl::sort<vec_types,IndexPred<_1,_2>>::type;
 
@@ -101,8 +99,7 @@ struct TupleSortImpl
     -> std::tuple<typename boost::mpl::at_c<Vec,S>::type::type...>;
 
   using type = 
-    decltype(cont_to_tuple(std::declval<sorted>(),
-			     index_seq() ));
+    decltype(cont_to_tuple(std::declval<sorted>(),index_seq()));
 
   // For make_sorted_tuple
   template<size_t I>
@@ -122,6 +119,23 @@ struct TupleSortImpl
 					   index_seq()));
 
   using decoder = Decoder<TupleSortImpl<Pred,Tpl>>;
+
+  template<size_t...S,typename...Args>
+  static constexpr auto 
+  make_sorted_tuple_impl(std::index_sequence<S...>,
+			 Args&&... args)
+  {
+    using tpl = decltype(std::make_tuple(args...));
+    static_assert(std::is_same<tpl,Tpl>::value,
+		  "Cannot construct tuple with wrong arguments");
+    
+    using impl = TupleSortImpl<Pred,tpl>;
+    using sorted = typename impl::type;
+
+    auto tmp = std::tie(args...);
+    return 
+      sorted(std::get<impl::template OldIndex<S>::value>(tmp)...);
+  }
 };
 
 #endif
