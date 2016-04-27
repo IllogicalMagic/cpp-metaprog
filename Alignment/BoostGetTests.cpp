@@ -44,7 +44,8 @@ struct Test
 			 std::index_sequence<S...>)
     {
       bool result=true;
-      bool dummy[] = 
+      using process_pack = bool[];
+      (void)process_pack 
 	{0,result&=
 	 (std::get<S>(old)==T::decoder::template get<S>(sorted))...};
       return result;

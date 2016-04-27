@@ -4,8 +4,6 @@ CXXSTD?=c++14
 CXXFLAGS=-Wall -Werror --pedantic-errors -g -O0
 CXXFLAGS+=-std=$(CXXSTD)
 CXXFLAGS+=$(CXXOPT)
-CXXNOWARN+=-Wno-unused-variable -Wno-unused-but-set-variable
-CXXFLAGS+=$(CXXNOWARN)
 
 Boost%: %.cpp
 	$(CXX) $(CXXFLAGS) -DWITH_BOOST $^ -o $@

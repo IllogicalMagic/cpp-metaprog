@@ -147,6 +147,12 @@ struct TupleSortImpl
     return 
       sorted(std::get<OldIndex<S>::value>(tmp)...);
   }
+
+  static constexpr auto 
+  make_sorted_tuple_impl(std::index_sequence<>)
+  {
+    return std::tuple<>();
+  }
 };
 
 #endif

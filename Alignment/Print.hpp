@@ -34,13 +34,13 @@ void tuple_values_print_impl(std::index_sequence<S...>,
 			     const std::tuple<Types...>& t)
 {
   std::cout << '(';
-  // C++17 fold-expressions will be very useful
-  char dummy[]
-  {'\0',(std::cout 
-      << Getter<S>::get(t) 
-      << ':'
-      << alignof(decltype(Getter<S>::get(t)))
-      << (S==sizeof...(S)-1?')':','),'\0')...};
+  using process_pack = bool[];
+  (void)process_pack
+    {0,(std::cout 
+	<< Getter<S>::get(t) 
+	<< ':'
+	<< alignof(decltype(Getter<S>::get(t)))
+	<< (S==sizeof...(S)-1?')':','),0)...};
   if (sizeof...(S)==0)
     std::cout << ')';
 }
