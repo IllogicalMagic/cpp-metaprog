@@ -34,6 +34,7 @@ void tuple_values_print_impl(std::index_sequence<S...>,
 			     const std::tuple<Types...>& t)
 {
   std::cout << '(';
+  // C++17 fold-expressions will be very useful
   char dummy[]
   {'\0',(std::cout 
       << Getter<S>::get(t) 

@@ -141,12 +141,11 @@ struct TupleSortImpl
     static_assert(std::is_same<tpl,Tpl>::value,
 		  "Cannot construct tuple with wrong arguments");
     
-    using impl = TupleSortImpl<Pred,tpl>;
-    using sorted = typename impl::type;
+    using sorted = type;
 
     auto tmp = std::tie(args...);
     return 
-      sorted(std::get<impl::template OldIndex<S>::value>(tmp)...);
+      sorted(std::get<OldIndex<S>::value>(tmp)...);
   }
 };
 

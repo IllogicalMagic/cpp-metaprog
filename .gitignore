@@ -42,4 +42,6 @@ Copy/TypeTests
 
 Alignment/Tests
 Alignment/GeneralSortTests
+Alignment/BoostTests
+Alignment/BoostGetTests
 
