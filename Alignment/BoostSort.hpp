@@ -41,42 +41,25 @@ template<typename SortImpl>
 struct Decoder
 {
   template<size_t Index>
-  static constexpr auto recode()
+  struct Recode
   {
-    using namespace boost;
-
     using index_map = 
       typename SortImpl::index_map;
-    using old = mpl::size_t<Index>;
-    using index = typename mpl::at<index_map,old>::type;
+    using old = boost::mpl::size_t<Index>;
+    using index = typename boost::mpl::at<index_map,old>::type;
+    static constexpr size_t value = index::value;
+  };
 
-    return index::value;
-  }
-
-  template<size_t Index>
-  static constexpr auto& get(typename SortImpl::type& t)
+  template<size_t Index, typename T>
+  static constexpr decltype(auto) get(T&& t)
   {
-    return std::get<recode<Index>()>(t);
+    using del_ref = typename std::remove_reference<T>::type;
+    static_assert(std::is_same<
+		  typename SortImpl::type,
+		  typename std::remove_cv<del_ref>::type>::value,
+		  "Decoder's tuple type doesn't match argument tuple type");
+    return std::get<Recode<Index>::value>(t);
   }
-  
-  template<size_t Index>
-  static constexpr auto&& get(typename SortImpl::type&& t)
-  {
-    return get<Index>(t);
-  }
-
-  template<size_t Index>
-  static constexpr auto& get(const typename SortImpl::type& t)
-  {
-    return std::get<recode<Index>()>(t);
-  }
-
-  template<size_t Index>
-  static constexpr auto&& get(const typename SortImpl::type&& t)
-  {
-    return get<Index>(t);
-  }
-
 };
 
 template<template <typename T1, typename  T2> class Pred,

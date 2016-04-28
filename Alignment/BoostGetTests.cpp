@@ -29,7 +29,7 @@ struct Test
     {
       template<typename Tpl>
       constexpr static
-      auto get(const Tpl& t)
+      decltype(auto) get(Tpl&& t)
       { 
 	return T::decoder::template get<N>(t);
       }   
@@ -60,7 +60,7 @@ struct Test
       tpl t = std::make_tuple(args...);
       sorted ts = 
 	AlignTupleSort<tpl>::make_sorted_tuple(args...);
-   
+      
       std::cout << "Old: ";
       tuple_values_print<StdGetter>(t);
       std::cout << "\nSorted: ";
