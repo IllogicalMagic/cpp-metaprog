@@ -43,12 +43,11 @@ struct Test
 			 const std::tuple<Sorted...>& sorted,
 			 std::index_sequence<S...>)
     {
-      bool result=true;
-      using process_pack = bool[];
-      (void)process_pack 
-	{0,result&=
-	 (std::get<S>(old)==T::decoder::template get<S>(sorted))...};
-      return result;
+      auto true_tpl = std::make_tuple(((void)S,true)...);
+      auto res_tpl = 
+	std::make_tuple
+	(std::get<S>(old)==T::decoder::template get<S>(sorted)...);
+      return true_tpl==res_tpl;
     }
 
     template<typename...Args>
