@@ -57,7 +57,8 @@ struct Decoder
     static_assert(std::is_same<
 		  typename SortImpl::type,
 		  typename std::remove_cv<del_ref>::type>::value,
-		  "Decoder's tuple type doesn't match argument tuple type");
+		  "Tuple type of decoder doesn't match argument tuple type");
+
     return std::get<Recode<Index>::value>(t);
   }
 };
@@ -118,23 +119,21 @@ struct TupleSortImpl
   template<size_t...S,typename...Args>
   static constexpr auto 
   make_sorted_tuple_impl(std::index_sequence<S...>,
-			 Args&&... args)
+			 std::tuple<Args...>&& args_t)
   {
-    using tpl = decltype(std::make_tuple(args...));
-    static_assert(std::is_same<tpl,Tpl>::value,
-		  "Cannot construct tuple with wrong arguments");
+    static_assert
+      (std::is_same
+         <std::tuple
+           <typename std::remove_cv
+             <typename std::remove_reference<Args>::type>
+           ::type...>,
+         Tpl>::value,
+       "Cannot construct tuple with wrong arguments");
     
     using sorted = type;
 
-    auto tmp = std::tie(args...);
     return 
-      sorted(std::get<OldIndex<S>::value>(tmp)...);
-  }
-
-  static constexpr auto 
-  make_sorted_tuple_impl(std::index_sequence<>)
-  {
-    return std::tuple<>();
+      sorted(std::get<OldIndex<S>::value>(args_t)...);
   }
 };
 

@@ -32,7 +32,7 @@ struct AlignTupleSort
   {
     return impl::make_sorted_tuple_impl
       (std::make_index_sequence<sizeof...(Args)>(),
-       std::forward<Args>(args)...);
+       std::forward_as_tuple(args...));
   }
 };
 
